@@ -1,0 +1,2 @@
+[web]
+192.168.171.131 ansible_ssh_user=aziza ansible_ssh_pass=aziza
