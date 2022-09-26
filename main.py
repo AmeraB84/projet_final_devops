@@ -1,7 +1,7 @@
 import sys
 import codecs
 import paramiko
-
+import os
 
 from getpass import getpass
 
@@ -37,15 +37,17 @@ def paramiko_test(user, password, ip):
     _, _, _ = ssh.exec_command('pip install requests')
 
     _, stdoutO,_ = ssh.exec_command(f'sudo nmap -O {ip}')
-    with open('nse-O.txt', "w") as file:
+    if not os.path.exists("stdout"):
+      os.makedirs("stdout")
+    with open('stdout/nse-O.txt', "w") as file:
         file.write(stdoutO.read().decode('utf-8'))   
 
     _, stdoutV,_ = ssh.exec_command(f'nmap -sV --script vuln {ip}')
-    with open('nse-vuln.txt', "w") as file:
+    with open('stdout/nse-vuln.txt', "w") as file:
         file.write(stdoutV.read().decode('utf-8'))   
 
     _, stdout, _ = ssh.exec_command('python vulmap-linux.py')
-    with open('tmp.txt', "w",encoding='utf-8') as file:
+    with open('stdout/tmp.txt', "w",encoding='utf-8') as file:
         file.write(stdout.read())   
 
 if __name__ == '__main__':
