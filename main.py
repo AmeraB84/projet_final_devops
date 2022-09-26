@@ -1,3 +1,5 @@
+import sys
+import codecs
 import paramiko
 
 from getpass import getpass
@@ -33,20 +35,16 @@ def paramiko_test(user, password, ip):
     _, stdout, _ = ssh.exec_command('source .env/bin/activate')
     _, stdout, _ = ssh.exec_command('pip install requests')
     #_, stdout, _ = ssh.exec_command('ls')
-    _, stdout, se = ssh.exec_command('python vulmap-linux.py')
+    _, stdout, _ = ssh.exec_command('python vulmap-linux.py')
     
     cmd_output = stdout.read()
-    print('log stdout: ', cmd_output)
-    print('log stderr: ', se.read())
+    print('log stdout: ', cmd_output.decode("utf-8"))
 
-    #with open('tmp.txt', "a") as file:
-    #    file.write(str(cmd_output)+'\n')
+    with open('tmp.txt', "w") as file:
+        file.write(cmd_output.decode("utf-8"))
 
 if __name__ == '__main__':
     # user, password, ip = demande_identifiants()
-
-    user = 'ec2-user'
-    password = 'Floride5623'
-    ip = '18.133.236.161'
+    _, user, password, ip = sys.argv
 
     paramiko_test(user, password, ip)
