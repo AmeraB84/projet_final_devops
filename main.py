@@ -48,8 +48,6 @@ def paramiko_test(user, password, ip):
         file.write(stdoutV.read().decode('utf-8'))   
     
     _, stdout, _ = ssh.exec_command('python vulmap-linux.py')
-    print(dir(stdout))
-    print(stdout.readable())
 
     with open('stdout/tmp.txt', "wb") as file:
         file.write(stdout.read())
