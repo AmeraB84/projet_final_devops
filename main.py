@@ -57,7 +57,7 @@ def paramiko_test(user, password, ip):
         print(mon_fichier)
 
 if __name__ == '__main__':
-    # user, password, ip = demande_identifiants()
-    _, user, password, ip = sys.argv
+    user, password, ip = demande_identifiants()
+    # _, user, password, ip = sys.argv
 
     paramiko_test(user, password, ip)
