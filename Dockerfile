@@ -13,6 +13,10 @@ COPY requierments.txt .
 RUN pip install -r requierments.txt
 
 COPY main.py ./
+COPY server.py ./
 
 CMD [ "python", "./main.py"]
 
+WORKDIR /app/stdout
+EXPOSE 80
+CMD [ "python", "../server.py"]
