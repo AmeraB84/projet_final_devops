@@ -2,8 +2,6 @@ FROM python:latest
 
 WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
 # copy the dependencies file to the working directory
 
 RUN python -m venv /opt/venv
