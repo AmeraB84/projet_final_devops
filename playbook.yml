@@ -29,14 +29,15 @@
           - docker-ce
           - docker-ce-cli
           - containerd.io
+          - docker-compose
         state: present
     - name: Starting docker service
       service:
         name: "docker"
         state: started
         enabled: yes
-    - name: Installing Docker SDK for python3
-      command: pip3 install docker
-
+    # name: Installing Docker SDK for python3
+    #  command: pip3 install docker
+    
 
   
