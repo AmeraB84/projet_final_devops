@@ -40,4 +40,7 @@
     #  command: pip3 install docker
     
 
-  
+    - name: Clone a repo with separate git directory 
+      ansible.builtin.git:
+        repo: https://github.com/AmeraB84/projet_final_devops.git   
+        dest: /home/aziza/final     
