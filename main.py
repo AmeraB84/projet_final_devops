@@ -2,22 +2,38 @@ import sys
 import codecs
 import paramiko
 import os
+import urllib
 
+from flask import Flask, render_template, request
 from getpass import getpass
 
 url_vul_py = 'https://raw.githubusercontent.com/vulmon/Vulmap/master/Vulmap-Linux/vulmap-linux.py'
+app = Flask(__name__)
 
-def demande_identifiants():
-    passwd = None
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        ip = request.form['ip']
+        username = request.form['username']
+        password = request.form['password']
+        paramiko_test(username, password, ip)
+        return render_template("index.html")
+    else:
+        return render_template("index.html")
 
-    user_name = input("Saisir le nom d'utilisateur : ")
+@app.route('/files', methods=['GET', 'POST'])
+def list_files():
+    files = os.listdir('stdout/')
+    return render_template('files.html', files=files)
 
-    if user_name:
-        passwd = getpass("Saisir le mot de passe : ")
-    ip_address = input("Saisir l'IP : ")
-
-    return user_name, passwd, ip_address
-
+@app.route('/files/open', methods=['GET', 'POST'])
+def open():
+    path = os.path.dirname(os.path.realpath(__file__))
+    filename = request.args.get('filename')
+    url = 'file://' + path + '/stdout/' + filename
+    file = urllib.request.urlopen(url)
+    content = file.read()
+    return content
 
 def paramiko_test(user, password, ip):
     ssh = paramiko.SSHClient()
@@ -57,7 +73,4 @@ def paramiko_test(user, password, ip):
         print(mon_fichier)
 
 if __name__ == '__main__':
-    user, password, ip = demande_identifiants()
-    # _, user, password, ip = sys.argv
-
-    paramiko_test(user, password, ip)
+    app.run()

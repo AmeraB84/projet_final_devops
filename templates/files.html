@@ -1,0 +1,9 @@
+<ul>
+    {% for file in files %}
+    <li>
+        <a href="{{ (request.path + '/' ) + 'open?filename=' + file}}">
+            {{ (request.path + '/' if request.path != '/' else '') + file }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
