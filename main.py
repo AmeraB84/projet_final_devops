@@ -28,8 +28,8 @@ def openFile():
     filename = request.args.get('filename')
     url = 'file://' + path + '/stdout/' + filename
     file = urllib.request.urlopen(url)
-    content = file.read()
-    return content
+    content = file.read().decode('utf-8')
+    return '<pre>' +  content + '</pre>'
 
 def paramiko_test(user, password, ip):
     print("Paramiko test")
@@ -62,8 +62,8 @@ def paramiko_test(user, password, ip):
     
     _, stdout, _ = ssh.exec_command('python vulmap-linux.py')
 
-    with open('stdout/tmp.txt', "w+") as file:
-        file.write(stdout.read().decode('utf-8'))
+    with open('stdout/tmp.txt', "w+b") as file:
+        file.write(stdout.read())
 
     with open('stdout/tmp.txt', "r", encoding='utf-8') as file:
         mon_fichier = file.read()
