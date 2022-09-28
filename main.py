@@ -47,26 +47,23 @@ def paramiko_test(user, password, ip):
     ssh.exec_command('python3 -m venv .env')
     ssh.exec_command('source .env/bin/activate')
     ssh.exec_command('pip install requests')
+    ssh.exec_command('sudo yum install nmap -y')
 
     if not os.path.exists("stdout"):
         os.makedirs("stdout")
     
     _, stdoutO,_ = ssh.exec_command(f'sudo nmap -O {ip}')
+    print(_.read()) 
     with open('stdout/nse-O.txt', "w+") as file:
         file.write(stdoutO.read().decode('utf-8'))   
 
-    _, stdoutV,_ = ssh.exec_command(f'nmap -sV --script vuln {ip}')
+    _, stdoutV,_ = ssh.exec_command(f'sudo nmap -sV --script vuln {ip}')
     with open('stdout/nse-vuln.txt', "w+") as file:
         file.write(stdoutV.read().decode('utf-8'))   
     
     _, stdout, _ = ssh.exec_command('python vulmap-linux.py')
-
     with open('stdout/tmp.txt', "w+b") as file:
         file.write(stdout.read())
-
-    with open('stdout/tmp.txt', "r", encoding='utf-8') as file:
-        mon_fichier = file.read()
-        print(mon_fichier)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
