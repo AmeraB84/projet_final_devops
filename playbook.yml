@@ -1,46 +1,60 @@
 ---
-- name: install Docker
+- name: install Docker and run application
   hosts: all
   become: true
   tasks:
-    - name: Install apt-transport-https
-      ansible.builtin.apt:
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - lsb-release
-          - gnupg
-        state: latest
-        update_cache: true
+    - name: set mydistribution
+      ansible.builtin.set_fact:
+        mydistribution: "{{ 'rhel' if (ansible_distribution == 'Red Hat Enterprise Linux') else (ansible_distribution | lower) }}"
 
     - name: Add signing key
-      ansible.builtin.apt_key:
-        url: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+      ansible.builtin.rpm_key:
+        key: "https://download.docker.com/linux/{{ mydistribution }}/gpg"
         state: present
 
-    - name: Add repository into sources list
-      ansible.builtin.apt_repository:
-        repo: "deb [arch={{ ansible_architecture }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
-        state: present
-        filename: docker
-    - name: Installing Docker package
-      package:
-        name: 
+    - name: Add repository into repo.d list
+      ansible.builtin.yum_repository:
+        name: docker
+        description: docker repository
+        baseurl: "https://download.docker.com/linux/{{ mydistribution }}/$releasever/$basearch/stable"
+        enabled: true
+        gpgcheck: true
+        gpgkey: "https://download.docker.com/linux/{{ mydistribution }}/gpg"
+
+    - name: Install Docker
+      ansible.builtin.yum:
+        name:
           - docker-ce
           - docker-ce-cli
           - containerd.io
-          - docker-compose
-        state: present
+        state: latest
+        update_cache: true
+
+    - name: Download and install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.21.2/docker-compose-Linux-x86_64
+        dest: /usr/bin/docker-compose
+        mode: 0755
+
     - name: Starting docker service
       service:
         name: "docker"
         state: started
         enabled: yes
-    # name: Installing Docker SDK for python3
-    #  command: pip3 install docker
-    
 
+    - name: Install git
+      ansible.builtin.yum:
+        name:
+          - git
+        state: latest
+        update_cache: true
+      
     - name: Clone a repo with separate git directory 
       ansible.builtin.git:
         repo: https://github.com/AmeraB84/projet_final_devops.git   
-        dest: /home/aziza/final     
+        dest: /home/projet_final_devops
+
+    - name: Deploiement du conteneur applicatif
+      command: docker-compose up -d
+      args:
+        chdir: /home/projet_final_devops
