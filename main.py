@@ -3,7 +3,6 @@ import codecs
 import paramiko
 import os
 import urllib
-import time 
 from flask import Flask, render_template, request
 from getpass import getpass
 
@@ -24,7 +23,7 @@ def list_files():
     return render_template('files.html', files=files)
 
 @app.route('/files/open', methods=['GET', 'POST'])
-def open():
+def openFile():
     path = os.path.dirname(os.path.realpath(__file__))
     filename = request.args.get('filename')
     url = 'file://' + path + '/stdout/' + filename
@@ -64,7 +63,7 @@ def paramiko_test(user, password, ip):
     _, stdout, _ = ssh.exec_command('python vulmap-linux.py')
 
     with open('stdout/tmp.txt', "w+") as file:
-        file.write(stdout.read())
+        file.write(stdout.read().decode('utf-8'))
 
     with open('stdout/tmp.txt', "r", encoding='utf-8') as file:
         mon_fichier = file.read()
