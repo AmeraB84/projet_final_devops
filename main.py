@@ -3,7 +3,7 @@ import codecs
 import paramiko
 import os
 import urllib
-
+import time 
 from flask import Flask, render_template, request
 from getpass import getpass
 
@@ -12,17 +12,14 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    if request.method == 'POST':
-        ip = request.form['ip']
-        username = request.form['username']
-        password = request.form['password']
-        paramiko_test(username, password, ip)
-        return render_template("index.html")
-    else:
-        return render_template("index.html")
+    return render_template("index.html")
 
 @app.route('/files', methods=['GET', 'POST'])
 def list_files():
+    ip = request.form['ip']
+    username = request.form['username']
+    password = request.form['password']
+    paramiko_test(username, password, ip)
     files = os.listdir('stdout/')
     return render_template('files.html', files=files)
 
@@ -36,6 +33,7 @@ def open():
     return content
 
 def paramiko_test(user, password, ip):
+    print("Paramiko test")
     ssh = paramiko.SSHClient()
 
     # Adding new host key to the local
@@ -45,7 +43,7 @@ def paramiko_test(user, password, ip):
 
     ssh.connect(ip, port=22, username=user,
                 password=password, timeout=3)
-    
+    print("ssh connected")
 
     ssh.exec_command('wget -N '+url_vul_py)
     ssh.exec_command('python3 -m venv .env')
@@ -56,16 +54,16 @@ def paramiko_test(user, password, ip):
         os.makedirs("stdout")
     
     _, stdoutO,_ = ssh.exec_command(f'sudo nmap -O {ip}')
-    with open('stdout/nse-O.txt', "w") as file:
+    with open('stdout/nse-O.txt', "w+") as file:
         file.write(stdoutO.read().decode('utf-8'))   
 
     _, stdoutV,_ = ssh.exec_command(f'nmap -sV --script vuln {ip}')
-    with open('stdout/nse-vuln.txt', "w") as file:
+    with open('stdout/nse-vuln.txt', "w+") as file:
         file.write(stdoutV.read().decode('utf-8'))   
     
     _, stdout, _ = ssh.exec_command('python vulmap-linux.py')
 
-    with open('stdout/tmp.txt', "wb") as file:
+    with open('stdout/tmp.txt', "w+") as file:
         file.write(stdout.read())
 
     with open('stdout/tmp.txt', "r", encoding='utf-8') as file:
