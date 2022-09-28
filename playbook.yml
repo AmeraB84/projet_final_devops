@@ -1,5 +1,5 @@
 ---
-- name: install Docker
+- name: install Docker and run application
   hosts: all
   become: true
   tasks:
@@ -30,8 +30,31 @@
         state: latest
         update_cache: true
 
-    - name: Start Docker
-      ansible.builtin.service:
+    - name: Download and install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.21.2/docker-compose-Linux-x86_64
+        dest: /usr/bin/docker-compose
+        mode: 0755
+
+    - name: Starting docker service
+      service:
         name: "docker"
-        enabled: true
         state: started
+        enabled: yes
+
+    - name: Install git
+      ansible.builtin.yum:
+        name:
+          - git
+        state: latest
+        update_cache: true
+      
+    - name: Clone a repo with separate git directory 
+      ansible.builtin.git:
+        repo: https://github.com/AmeraB84/projet_final_devops.git   
+        dest: /home/projet_final_devops
+
+    - name: Deploiement du conteneur applicatif
+      command: docker-compose up -d
+      args:
+        chdir: /home/projet_final_devops

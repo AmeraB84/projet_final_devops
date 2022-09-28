@@ -5,6 +5,7 @@ import paramiko
 from flask import Flask, render_template, request
 
 URL_VUL_PY = 'https://raw.githubusercontent.com/vulmon/Vulmap/master/Vulmap-Linux/vulmap-linux.py'
+
 app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
@@ -49,11 +50,12 @@ def paramiko_test(user, password, ip):
     if not os.path.exists("stdout"):
         os.makedirs("stdout")
 
-    mes_test = {'nmap-os': f'sudo nmap -O {ip}',
-                'nmap-vuln': f'sudo nmap -sV --script vuln {ip}',
-                'vulmap': 'python vulmap-linux.py'
+    mes_tests = {'nmap-os': f'sudo nmap -O {ip}',
+                 'nmap-vuln': f'sudo nmap -sV --script vuln {ip}',
+                 'vulmap': 'python vulmap-linux.py'
                 }
-    for name, command in mes_test.items():
+
+    for name, command in mes_tests.items():
         _, stdout,_ = ssh.exec_command(command)
         with open(f'stdout/{name}.txt', "wb+") as file:
             file.write(stdout.read())   
