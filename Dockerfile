@@ -14,6 +14,7 @@ RUN pip install -r requierments.txt
 
 COPY main.py ./
 RUN mkdir ./templates 
+RUN mkdir ./stdout
 COPY templates/index.html ./templates/
 COPY templates/files.html ./templates/
 EXPOSE 5000

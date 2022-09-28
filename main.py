@@ -73,4 +73,4 @@ def paramiko_test(user, password, ip):
         print(mon_fichier)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
