@@ -1,10 +1,9 @@
-import sys
-import codecs
-import paramiko
 import os
+import sys
 import urllib
+import paramiko
+
 from flask import Flask, render_template, request
-from getpass import getpass
 
 url_vul_py = 'https://raw.githubusercontent.com/vulmon/Vulmap/master/Vulmap-Linux/vulmap-linux.py'
 app = Flask(__name__)
